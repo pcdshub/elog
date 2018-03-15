@@ -1,0 +1,2 @@
+include versioneer.py
+include elog/_version.py
