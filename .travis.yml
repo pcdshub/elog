@@ -36,12 +36,10 @@ script:
   # Requests, therefore we need to run an even smaller subset of the tests in
   # this case
   - |
-    if [[ $TRAVIS_PULL_REQUEST == true ]]; then
-      coverage run run_tests.py --no-kerberos
-    fi
-  - |
     if [[ $TRAVIS_PULL_REQUEST == false ]]; then
       coverage run run_tests.py --user $TEST_USER --pw $TEST_PW --no-kerberos
+    else
+      coverage run run_tests.py --no-kerberos
     fi
   - coverage report -m
   - flake8 elog
