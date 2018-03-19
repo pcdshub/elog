@@ -33,9 +33,6 @@ def pytest_generate_tests(metafunc):
         services.append(PHPWebService(metafunc.config.option.user,
                                       metafunc.config.option.pw))
         ids.append('ws-auth')
-    # Catch that no initialization was specified
-    if not services:
-        raise Exception("Must use a username or Kerberos ticket!")
     # Pass our services on to tests
     if 'pswww' in metafunc.fixturenames:
         metafunc.parametrize("pswww", services, ids=ids)
