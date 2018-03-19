@@ -32,7 +32,17 @@ install:
 
 script:
   # Test with the checkout
-  - coverage run run_tests.py --user $TEST_USER --pw $TEST_PW --no-kerberos
+  # Travis will not allow secure environment variables to be used in Pull
+  # Requests, therefore we need to run an even smaller subset of the tests in
+  # this case
+  - |
+    if [[ $TRAVIS_PULL_REQUEST == true ]]; then
+      coverage run run_tests.py --no-kerberos
+    fi
+  - |
+    if [[ $TRAVIS_PULL_REQUEST == false ]]; then
+      coverage run run_tests.py --user $TEST_USER --pw $TEST_PW --no-kerberos
+    fi
   - coverage report -m
   - flake8 elog
 
