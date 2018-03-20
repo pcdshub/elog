@@ -146,6 +146,6 @@ class HutchELog(ELog):
             books.append('facility')
         else:
             raise ValueError("Must select either facility or experiment")
-        # Post 
+        # Post
         super().post(msg, run=run, tags=tags,
                      attachments=attachments, logbooks=books)
