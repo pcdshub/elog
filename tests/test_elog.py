@@ -34,12 +34,12 @@ def test_hutchelog_init(mockelog):
 
 
 def test_elog_post(mockelog):
-    mockelog.post('Both logbooks', tags='first')
+    mockelog.post('Both logbooks', tags='first', facility=True)
     assert len(mockelog.service.posts) == 2
-    mockelog.post('Facility', experiment=False)
+    mockelog.post('Facility', experiment=False, facility=True)
     assert len(mockelog.service.posts) == 3
     assert mockelog.service.posts[-1][0][1] == '0'
-    mockelog.post('Experiment', facility=False)
+    mockelog.post('Experiment')
     assert len(mockelog.service.posts) == 4
     assert mockelog.service.posts[-1][0][1] == '1'
     with pytest.raises(ValueError):

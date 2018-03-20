@@ -111,7 +111,7 @@ class HutchELog(ELog):
         self.logbooks['experiment'] = exp_id
 
     def post(self, msg, run=None, tags=None, attachments=None,
-             experiment=True, facility=True):
+             experiment=True, facility=False):
         """
         Post to ELog
 
