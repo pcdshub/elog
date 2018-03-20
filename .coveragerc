@@ -1,0 +1,10 @@
+[run]
+source =
+    elog
+[report]
+omit =
+    #versioning
+    .*version.*
+    *_version.py
+    #tests
+    *test*

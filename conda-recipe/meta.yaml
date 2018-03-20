@@ -1,0 +1,30 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: elog
+  version : {{ data.get('version') }}
+
+source:
+  path: ..
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - python {{PY_VER}}*,>=3.5
+    - setuptools
+
+  run:
+    - python {{PY_VER}}*,>=3.5
+    - requests
+    - krtc
+
+test:
+  imports:
+    - elog
+
+about:
+  home: https://github.com/pcdshub/elog
+  license: SLAC Open License
+  summary: Python API for interfacing with LCLS ELog 
