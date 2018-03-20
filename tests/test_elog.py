@@ -42,3 +42,5 @@ def test_elog_post(mockelog):
     mockelog.post('Experiment', facility=False)
     assert len(mockelog.service.posts) == 4
     assert mockelog.service.posts[-1][0][1] == '1'
+    with pytest.raises(ValueError):
+        mockelog.post('Failure', experiment=False, facility=False)
