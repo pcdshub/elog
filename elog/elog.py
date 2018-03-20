@@ -136,16 +136,16 @@ class HutchELog(ELog):
         experiment: bool, optional
             Post to the experimental logbook
         """
-        # If we want both logbooks we don't need to do anything special
+        books = list()
+        # Select our logbooks
         if experiment and facility:
-            super().post(msg, run=run, tags=tags, attachments=attachments)
-        # Otherwise narrow our logbooks and post to this smaller subset
+            pass
+        elif experiment:
+            books.append('experiment')
+        elif facility:
+            books.append('facility')
         else:
-            books = list()
-            if experiment:
-                books.append('experiment')
-            if facility:
-                books.append('facility')
-            super().post(msg, run=run, tags=tags,
-                         attachments=attachments,
-                         logbooks=books)
+            raise ValueError("Must select either facility or experiment")
+        # Post 
+        super().post(msg, run=run, tags=tags,
+                     attachments=attachments, logbooks=books)
