@@ -188,7 +188,7 @@ class PHPWebService:
             These can either be entered as the path to each attachment or a
             tuple of a path and description
         """
-        logger.info("Posting to Logbook ID: %s", logbook_id)
+        logger.debug("Posting to Logbook ID: %s", logbook_id)
         # Basic post information
         post = {'author_account': self._user,
                 'message_text': msg,
