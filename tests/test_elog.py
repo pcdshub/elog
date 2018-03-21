@@ -1,3 +1,4 @@
+import os
 import pytest
 
 import elog.elog
@@ -28,6 +29,21 @@ def mockelog():
     elog.elog.PHPWebService = orig_web
 
 
+@pytest.fixture(scope='function')
+def temporary_config():
+    cfg = """\
+    [DEFAULT]
+    user=user
+    pw=pw
+    """
+    with open('web.cfg', '+w') as f:
+        f.write(cfg)
+    # Allow the test to run
+    yield
+    # Remove the file
+    os.remove('web.cfg')
+
+
 def test_hutchelog_init(mockelog):
     assert mockelog.logbooks['facility'] == '0'
     assert mockelog.logbooks['experiment'] == '1'
@@ -44,3 +60,18 @@ def test_elog_post(mockelog):
     assert mockelog.service.posts[-1][0][1] == '1'
     with pytest.raises(ValueError):
         mockelog.post('Failure', experiment=False, facility=False)
+
+
+def test_elog_from_conf(temporary_config):
+    # Fake ELog that stores the username and pw internally
+    class TestELog(elog.elog.HutchELog):
+
+        def __init__(self, instrument, user=None, pw=None):
+            self.instrument = instrument
+            self.user = user
+            self.pw = pw
+
+    log = TestELog.from_conf('TST')
+    assert log.instrument == 'TST'
+    assert log.user == 'user'
+    assert log.pw == 'pw'
