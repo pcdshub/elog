@@ -1,7 +1,9 @@
 """
 Front-facing API for PCDS Elog
 """
+import os
 import logging
+from configparser import NoOptionError, ConfigParser
 
 from collections import namedtuple
 
@@ -149,3 +151,35 @@ class HutchELog(ELog):
         # Post
         super().post(msg, run=run, tags=tags,
                      attachments=attachments, logbooks=books)
+
+    @classmethod
+    def from_conf(cls, *args, **kwargs):
+        """
+        Load the login information from a stored configuration file
+
+        A file ``web.cfg` is searched in the current directory or the user's
+        home directory. The format of this configuration file is the standard
+        ``.ini`` structure and should define the username and password like:
+
+        .. code::
+
+            [DEFAULT]
+            user = MY_USERNAME
+            pw = MY_PASSWORD
+        """
+        # Find the appropriate files
+        cfg = ConfigParser()
+        cfgs = cfg.read(['web.cfg', '.web.cfg',
+                         os.path.expanduser('~/.web.cfg')])
+        # Alert the user if we found no configuration files
+        if not cfgs:
+            raise EnvironmentError("No configuration file found")
+        # Find the configuration
+        try:
+            user = cfg.get('DEFAULT', 'user')
+            pw = cfg.get('DEFAULT', 'pw')
+        except NoOptionError as exc:
+            raise EnvironmentError('Must specify "user" and "pw" in '
+                                   'configuration file') from exc
+        # Return our device
+        return cls(*args, user=user, pw=pw, **kwargs)
