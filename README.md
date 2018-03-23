@@ -14,10 +14,10 @@ src="https://img.shields.io/travis/pcdshub/elog/master.svg?style=flat-square"
 </div>
 
 <p align="center">
-  <a href="#motivation">Installation</a> •
-  <a href="#features">Basic Usage</a> •
-  <a href="#installation">Authentication</a> •
-  <a href="#installation">Test Suite</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#basic-usage">Basic Usage</a> •
+  <a href="#authentication">Authentication</a> •
+  <a href="#test-suite">Test Suite</a> •
 </p>
 
 
@@ -26,7 +26,7 @@ The `elog` package is available on both the `pcds-tag` and `pcds-dev` conda
 channels. Quick installation looks like:
 
 ```shell
-conda install elog -c pcds-tag`
+conda install elog -c pcds-tag
 ```
 
 ## Basic Usage
@@ -51,15 +51,16 @@ and `experiment` keywords:
    # Post a message to both logbooks
    mfx_elog.post('Important: Everyone please read', facility=True)
    # Post a message to only the facility logbook
-   mfx_elog.post('Note for controls staff', tags=['bug_report'],
+   mfx_elog.post('Note for controls staff', experiment=False,
+                 tags=['bug_report'],
                  attachments=[('path/to/log.txt', 'Relevant log file')])
 ```
    
 ## Authentication
-Most users will authenticate with `kerberos` this is the assumption made if no
+Most users will authenticate with `kerberos`, this is the assumption made if no
 username or password is passed into the class constructor. However, for
 certain accounts password authentication is needed. Four examples of different
-authentication methods are shown below
+authentication methods are shown below:
 
 ```python
    # Kerberos ticket is used for authentication
