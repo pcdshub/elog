@@ -153,7 +153,7 @@ class PHPWebService:
         url = '{url}/LogBook/RequestCurrentExperiment.php?instr={instr}'\
               ''.format(url=self._url, instr=instrument)
         if station:
-            url += '%station={}'.format(station)
+            url += '&station={}'.format(station)
         # Make request to WebService
         result = requests.get(url, **self._auth)
         # Invalid HTTP code
