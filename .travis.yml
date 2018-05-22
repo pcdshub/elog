@@ -37,9 +37,9 @@ script:
   # this case
   - |
     if [[ $TRAVIS_PULL_REQUEST == false ]]; then
-      coverage run run_tests.py --user $TEST_USER --pw $TEST_PW --no-kerberos
+      coverage run run_tests.py --user $TEST_USER --pw $TEST_PW
     else
-      coverage run run_tests.py --no-kerberos
+      coverage run run_tests.py
     fi
   - coverage report -m
   - flake8 elog
