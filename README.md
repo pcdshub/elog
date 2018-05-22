@@ -74,13 +74,12 @@ authentication methods are shown below:
 ```
 
 ## Test Suite
-The automated testing package will attempt to actually interface with the web
-server using `kerberos` authentication. If you do not want to run these tests
-you can use the keyword `no-kerberos` to skip the relevant tests and run with a
-different username and password.
+The automated testing package has multiple options to attempt to interface with
+the actual web service. If you want to run these tests you can either
+authenticate with `--user` and/or you can use the keyword `kerberos`.
 
 ```shell
-python run_tests --user my_user --pw my_pw --no-kerberos
+python run_tests.py --user my_user --pw my_pw --kerberos
 ```
 
 There are also tests that post to the web service but these are disabled by
