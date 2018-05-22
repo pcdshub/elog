@@ -9,7 +9,7 @@ def pytest_addoption(parser):
                      help='Username for ws-auth authentication')
     parser.addoption('--pw', action='store', default=None,
                      help='Password user for ws-auth authentication')
-    parser.addoption('--no-kerberos', action='store_true', default=False,
+    parser.addoption('--kerberos', action='store_true', default=False,
                      help='Whether or not to attempt Kerberos authentication')
     parser.addoption('--post', action='store_true', default=False,
                      help='Whether to include tests that post to the ELog')
@@ -20,7 +20,7 @@ def pytest_generate_tests(metafunc):
     services = []
     ids = []
     # Create a Kerberos authentication
-    if not metafunc.config.option.no_kerberos:
+    if metafunc.config.option.kerberos:
         services.append(PHPWebService())
         ids.append('ws-kerb')
 
