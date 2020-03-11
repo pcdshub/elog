@@ -1,9 +1,11 @@
 """
 Interface for PHP based ELog web service
 """
+import os
 import getpass
 import logging
 from urllib.parse import urlparse
+import mimetypes
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -103,8 +105,7 @@ class PHPWebService:
             web.get_facilities_logbook('CXI Instrument')
         """
         # Format correct URL
-        url = (self._url + '/LogBook/RequestExperimentsNew.php?instr=NEH'
-               '&access=post&is_location')
+        url = (self._url + '/lgbk/lgbk/' + instrument + '/ws/info')
         # Make request to WebService
         result = requests.get(url, **self._auth)
         # Invalid HTTP code
@@ -114,9 +115,8 @@ class PHPWebService:
                             ''.format(result.status_code))
         # Find the name that matches the specified instrument
         result = result.json()
-        for book in result['ResultSet']['Result']:
-            if book['name'] == instrument:
-                return book['id']
+        if result.get("success", False):
+            return result["value"]["_id"]
         # If we never found our instrument
         raise Exception("Unable to find any Logbook for {}"
                         "".format(instrument))
@@ -150,8 +150,9 @@ class PHPWebService:
 
         logger.debug("Requesting current experiment for %s", instrument)
         # Format correct URL
-        url = '{url}/LogBook/RequestCurrentExperiment.php?instr={instr}'\
-              ''.format(url=self._url, instr=instrument)
+        url = '{url}/lgbk/lgbk/ws/activeexperiment_for_instrument_station' \
+              '?instrument_name={instrument}' \
+              ''.format(url=self._url, instrument=instrument)
         if station:
             url += '&station={}'.format(station)
         # Make request to WebService
@@ -163,7 +164,7 @@ class PHPWebService:
                             ''.format(result.status_code))
         # Find experiment identification
         result = result.json()
-        return result['ResultSet']['Result']['id']
+        return result['value']['name']
 
     def post(self, msg, logbook_id,
              run=None, tags=None, attachments=None):
@@ -176,7 +177,8 @@ class PHPWebService:
             Desired text of LogBook message
 
         logbook_id: str
-            Three digit Identifier of Logbook
+            This is the name/id of the logbook; typically the experiment name.
+            For instruments, it is <instrument>_log
 
         run : int, optional
             Associate the post with a specific run
@@ -190,46 +192,42 @@ class PHPWebService:
         """
         logger.debug("Posting to Logbook ID: %s", logbook_id)
         # Basic post information
-        post = {'author_account': self._user,
-                'message_text': msg,
-                'id': logbook_id}
+        post = {'log_text': msg}
+        if run:
+            post['run_num'] = int(run)
         # Convert tags
         if tags:
-            post['num_tags'] = str(len(tags))
-            for i, tag in enumerate(tags):
-                post['tag_name_{}'.format(i)] = tag
-                post['tag_value_{}'.format(i)] = ''
+            post['log_tags'] = " ".join(tags)
         # Convert our attachments
-        files = dict()
+        files = []
         if attachments:
             for i, attachment in enumerate(attachments):
                 # See if our attachment has a description
                 if isinstance(attachment, str):
                     filename = attachment
-                    description = attachment
+                    description = os.path.basename(filename)
                 else:
                     (filename, description) = attachment
-                # Format post information
-                file_id = 'file{}'.format(i+1)
-                files[file_id] = open(filename, 'rb')
-                post[file_id] = description
-        # Scope and Run information
-        if run:
-            post['scope'] = 'run'
-            post['run_num'] = str(run)
-        else:
-            post['scope'] = 'experiment'
+
+                files.append(("files", (
+                    description,
+                    open(filename, 'rb'),
+                    mimetypes.guess_type(filename)[0])))
+
         # Make request to web service
-        url = self._url + '/LogBook/NewFFEntry4grabberJSON.php'
-        result = requests.post(url, data=post, files=files, **self._auth)
+        url = self._url + "/lgbk/lgbk/" + logbook_id + "/ws/new_elog_entry"
+        if files:
+            result = requests.post(url, data=post, files=files, **self._auth)
+        else:
+            result = requests.post(url, data=post, **self._auth)
         # Invalid HTTP code
         if result.status_code >= 299:
             raise Exception('Failed to post information to Web Service. '
                             'HTTP status_code: {}'.format(result.status_code))
         # Convert to JSON
         result = result.json()
-        if result['status'] != 'success':
+        if not result['success']:
             raise Exception('Failed to post information to Web Service. '
-                            'Reason: {}'.format(result['Message']))
+                            'Reason: {}'.format(result['error_msg']))
         else:
-            logger.info('New message ID: %s', result['message_id'])
+            logger.info('New message ID: %s', result["value"]['_id'])
