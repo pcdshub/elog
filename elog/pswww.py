@@ -177,7 +177,7 @@ class PHPWebService:
             Desired text of LogBook message
 
         logbook_id: str
-            This is the name/id of the logbook; typically the experiment name. 
+            This is the name/id of the logbook; typically the experiment name.
             For instruments, it is <instrument>_log
 
         run : int, optional
@@ -209,9 +209,9 @@ class PHPWebService:
                 else:
                     (filename, description) = attachment
 
-                files.append(("files", ( 
-                    description, 
-                    open(filename, 'rb'), 
+                files.append(("files", (
+                    description,
+                    open(filename, 'rb'),
                     mimetypes.guess_type(filename)[0])))
 
         # Make request to web service
