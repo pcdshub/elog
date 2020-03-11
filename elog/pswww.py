@@ -1,6 +1,7 @@
 """
 Interface for PHP based ELog web service
 """
+import os
 import getpass
 import logging
 from urllib.parse import urlparse
@@ -104,7 +105,7 @@ class PHPWebService:
             web.get_facilities_logbook('CXI Instrument')
         """
         # Format correct URL
-        url = (self._url + '/lgbk/lgbk/' + instrument +'/ws/info')
+        url = (self._url + '/lgbk/lgbk/' + instrument + '/ws/info')
         # Make request to WebService
         result = requests.get(url, **self._auth)
         # Invalid HTTP code
@@ -149,7 +150,8 @@ class PHPWebService:
 
         logger.debug("Requesting current experiment for %s", instrument)
         # Format correct URL
-        url = '{url}/lgbk/lgbk/ws/activeexperiment_for_instrument_station?instrument_name={instrument}'\
+        url = '{url}/lgbk/lgbk/ws/activeexperiment_for_instrument_station' \
+              '?instrument_name={instrument}' \
               ''.format(url=self._url, instrument=instrument)
         if station:
             url += '&station={}'.format(station)
@@ -175,7 +177,8 @@ class PHPWebService:
             Desired text of LogBook message
 
         logbook_id: str
-            This is the name/id of the logbook; typically the experiment name. For instruments, it is <instrument>_log
+            This is the name/id of the logbook; typically the experiment name. 
+            For instruments, it is <instrument>_log
 
         run : int, optional
             Associate the post with a specific run
@@ -206,7 +209,10 @@ class PHPWebService:
                 else:
                     (filename, description) = attachment
 
-                files.append(("files",  (description, open(filename, 'rb'), mimetypes.guess_type(filename)[0])))
+                files.append(("files", ( 
+                    description, 
+                    open(filename, 'rb'), 
+                    mimetypes.guess_type(filename)[0])))
 
         # Make request to web service
         url = self._url + "/lgbk/lgbk/" + logbook_id + "/ws/new_elog_entry"
