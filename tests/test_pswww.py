@@ -18,7 +18,7 @@ This is an automated test of https://github.com/pcdshub/elog
 @pytest.mark.unit
 def test_pswww_notebooks(pswww):
     logger.debug('test_pswww_notebooks')
-    assert pswww.get_facilities_logbook('SXR Instrument') == '46'
+    assert pswww.get_facilities_logbook('SXR_Instrument') == 'SXR_Instrument'
     assert isinstance(pswww.get_experiment_logbook('SXR'), str)
 
 
@@ -26,6 +26,6 @@ def test_pswww_notebooks(pswww):
 def test_pswww_post_smoke():
     logger.debug('test_pswww_post_smoke')
     pswww = PHPWebService()
-    pswww.post(msg, '302', tags=['test'],
+    pswww.post(msg, 'diadaq13', tags=['test'],
                attachments=[(image_png, 'Canonical test image "Lenna"'),
                             image_png])
