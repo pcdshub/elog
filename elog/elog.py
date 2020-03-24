@@ -31,12 +31,15 @@ class ELog:
     pw : str, optional
         Password, if this is left blank and a username is supplied the password
         will be requested via prompt
-    """
-    def __init__(self, logbooks, user=None, pw=None):
-        self.logbooks = logbooks
-        self.service = PHPWebService(user=user, pw=pw)
 
-    def post(self, msg, run=None, tags=None, attachments=None, logbooks=None):
+    base_url : str, optional
+        Point to a different server; perhaps a test server.
+    """
+    def __init__(self, logbooks, user=None, pw=None, base_url=None):
+        self.logbooks = logbooks
+        self.service = PHPWebService(user=user, pw=pw, base_url=base_url)
+
+    def post(self, msg, run=None, tags=None, attachments=None, logbooks=None, title=None):
         """
         Post to the logbooks
 
@@ -58,6 +61,9 @@ class ELog:
         logbooks : list, optional
             Only post to a subset of the logbooks known by the client. If this
             is left as None, all logbooks will be included.
+
+        title : str, optional
+            Interprets the message as a HTML message with this as the title
         """
         logbooks = logbooks or self.logbooks.keys()
         for alias in logbooks:
@@ -71,7 +77,8 @@ class ELog:
                 # Post the information to selected id
                 self.service.post(msg, book_id,
                                   run=run, tags=tags,
-                                  attachments=attachments)
+                                  attachments=attachments,
+                                  title=title)
 
 
 class HutchELog(ELog):
@@ -97,13 +104,17 @@ class HutchELog(ELog):
     pw : str, optional
         Password, if this is left blank and a username is supplied the password
         will be requested via prompt
+
+    base_url : str, optional
+        Point to a different server; perhaps a test server.
     """
-    def __init__(self, instrument, station=None, user=None, pw=None):
+    def __init__(self, instrument, station=None, user=None, pw=None,
+                 base_url=None):
         self.instrument = instrument
         self.station = station
         # Load an empty service
         logger.debug("Loading logbooks for %s", instrument)
-        super().__init__({}, user=user, pw=pw)
+        super().__init__({}, user=user, pw=pw, base_url=base_url)
         # Load the facilities logbook
         f_id = facility_name(instrument)
         self.logbooks['facility'] = self.service.get_facilities_logbook(f_id)
@@ -113,7 +124,7 @@ class HutchELog(ELog):
         self.logbooks['experiment'] = exp_id
 
     def post(self, msg, run=None, tags=None, attachments=None,
-             experiment=True, facility=False):
+             experiment=True, facility=False, title=None):
         """
         Post to ELog
 
@@ -137,6 +148,9 @@ class HutchELog(ELog):
 
         experiment: bool, optional
             Post to the experimental logbook
+
+        title : str, optional
+            Interprets the message as a HTML message with this as the title
         """
         books = list()
         # Select our logbooks
@@ -150,7 +164,7 @@ class HutchELog(ELog):
             raise ValueError("Must select either facility or experiment")
         # Post
         super().post(msg, run=run, tags=tags,
-                     attachments=attachments, logbooks=books)
+                     attachments=attachments, logbooks=books, title=title)
 
     @classmethod
     def from_conf(cls, *args, **kwargs):

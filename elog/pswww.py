@@ -32,12 +32,16 @@ class PHPWebService:
     pw : str, optional
         Password. If not supplied, a prompt will launch requesting the
         password in a safe manner
+
+    base_url : str, optional
+        Point to a different server; possibly a test server.
     """
     base_url = 'https://pswww.slac.stanford.edu'
 
-    def __init__(self, user=None, pw=None):
+    def __init__(self, user=None, pw=None, base_url=None):
         self._auth = None
-        self._url = None
+        self._base_url = base_url if base_url else self.base_url
+        self.url = None
         self.authenticate(user=user, pw=pw)
 
     def authenticate(self, user=None, pw=None):
@@ -67,7 +71,7 @@ class PHPWebService:
         if user:
             # Create authentication URL and params for HTTP
             logger.debug("Using HTTP authorization ...")
-            url = self.base_url + '/ws-auth'
+            url = self._base_url + '/ws-auth'
             if not pw:
                 pw = getpass.getpass()
             auth['auth'] = HTTPBasicAuth(user, pw)
@@ -75,7 +79,7 @@ class PHPWebService:
             user = getpass.getuser()
             # Create authentication URL and params for Kerberos
             logger.debug("Using Kerberos ...")
-            url = self.base_url + '/ws-kerb'
+            url = self._base_url + '/ws-kerb'
             host = urlparse(url).hostname
             auth['headers'] = KerberosTicket('HTTP@' + host).getAuthHeaders()
         # Store internal authentication information
@@ -167,7 +171,7 @@ class PHPWebService:
         return result['value']['name']
 
     def post(self, msg, logbook_id,
-             run=None, tags=None, attachments=None):
+             run=None, tags=None, attachments=None, title=None):
         """
         Post an entry to the ELog
 
@@ -189,6 +193,9 @@ class PHPWebService:
         attachments : list, optional
             These can either be entered as the path to each attachment or a
             tuple of a path and description
+
+        title : str, optional
+            Interprets the message as a HTML message with this as the title
         """
         logger.debug("Posting to Logbook ID: %s", logbook_id)
         # Basic post information
@@ -198,6 +205,9 @@ class PHPWebService:
         # Convert tags
         if tags:
             post['log_tags'] = " ".join(tags)
+        if title:
+            post['log_title'] = title
+
         # Convert our attachments
         files = []
         if attachments:
