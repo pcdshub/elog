@@ -39,7 +39,8 @@ class ELog:
         self.logbooks = logbooks
         self.service = PHPWebService(user=user, pw=pw, base_url=base_url)
 
-    def post(self, msg, run=None, tags=None, attachments=None, logbooks=None, title=None):
+    def post(self, msg, run=None, tags=None,
+             attachments=None, logbooks=None, title=None):
         """
         Post to the logbooks
 

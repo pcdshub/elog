@@ -62,11 +62,15 @@ if __name__ == '__main__':
                         addition of the <pre> tag.')
     args = parser.parse_args()
 
-    params = {"run": args.run, "tags": args.tags, "attachments": args.attachments}
+    params = {"run": args.run,
+              "tags": args.tags,
+              "attachments": args.attachments}
     if args.commandforchild:
         params["title"] = args.message
-        html_body = subprocess.run(args.commandforchild.split(), capture_output=True).stdout.decode("utf-8")
-        params["msg"] = html_body if args.skippre else "<pre>" + html_body + "<pre>"
+        html_body = subprocess.run(args.commandforchild.split(),
+                                   capture_output=True).stdout.decode("utf-8")
+        params["msg"] = html_body if args.skippre \
+            else "<pre>" + html_body + "<pre>"
     else:
         params["msg"] = args.message
 
