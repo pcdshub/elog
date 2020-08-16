@@ -188,7 +188,7 @@ class PHPWebService:
             Associate the post with a specific run
 
         tags : list, optional
-            List of tags to add to the post
+            List of tags to add to the post. Ideally, tags are plain strings without spaces. 
 
         attachments : list, optional
             These can either be entered as the path to each attachment or a
@@ -204,6 +204,8 @@ class PHPWebService:
             post['run_num'] = int(run)
         # Convert tags
         if tags:
+            if not isinstance(tags, list):
+                tags = [ tags ]
             post['log_tags'] = " ".join(tags)
         if title:
             post['log_title'] = title
