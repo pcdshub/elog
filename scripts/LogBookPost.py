@@ -8,7 +8,6 @@ using the PCDS elog client.
 """
 import argparse
 import logging
-import os
 import subprocess
 
 import elog
