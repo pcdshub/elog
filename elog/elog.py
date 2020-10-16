@@ -1,14 +1,13 @@
 """
 Front-facing API for PCDS Elog
 """
-import os
 import logging
-from configparser import NoOptionError, ConfigParser
-
+import os
 from collections import namedtuple
+from configparser import ConfigParser, NoOptionError
 
-from .utils import facility_name
 from .pswww import PHPWebService
+from .utils import facility_name
 
 logger = logging.getLogger(__name__)
 

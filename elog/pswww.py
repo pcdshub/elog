@@ -1,17 +1,15 @@
 """
 Interface for PHP based ELog web service
 """
-import os
 import getpass
 import logging
-from urllib.parse import urlparse
 import mimetypes
+import os
+from urllib.parse import urlparse
 
 import requests
-from requests.auth import HTTPBasicAuth
-
 from krtc import KerberosTicket
-
+from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 

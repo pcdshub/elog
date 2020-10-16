@@ -27,4 +27,4 @@ test:
 about:
   home: https://github.com/pcdshub/elog
   license: SLAC Open License
-  summary: Python API for interfacing with LCLS ELog 
+  summary: Python API for interfacing with LCLS ELog
