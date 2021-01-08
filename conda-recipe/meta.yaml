@@ -9,14 +9,14 @@ source:
 
 build:
   number: 1
+  noarch: python
 
 requirements:
   build:
-    - python {{PY_VER}}*,>=3.5
+    - python >=3.5
     - setuptools
-
   run:
-    - python {{PY_VER}}*,>=3.5
+    - python >=3.5
     - requests
     - krtc
 
