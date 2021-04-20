@@ -7,7 +7,7 @@ from configparser import NoOptionError, ConfigParser
 
 from collections import namedtuple
 
-from .utils import facility_name
+from .utils import facility_name, get_primary_elog, register_elog
 from .pswww import PHPWebService
 
 logger = logging.getLogger(__name__)
@@ -108,9 +108,16 @@ class HutchELog(ELog):
 
     base_url : str, optional
         Point to a different server; perhaps a test server.
+
+    primary : bool, optional
+        If True, this will be the primary elog returned when the
+        from_registry class method is used. If False, this will not be.
+        If omitted, this will default to True if there is no primary elog
+        or False if there already is one.
     """
+
     def __init__(self, instrument, station=None, user=None, pw=None,
-                 base_url=None):
+                 base_url=None, primary=None):
         self.instrument = instrument
         self.station = station
         # Load an empty service
@@ -123,6 +130,7 @@ class HutchELog(ELog):
         exp_id = self.service.get_experiment_logbook(instrument,
                                                      station=station)
         self.logbooks['experiment'] = exp_id
+        register_elog(self, primary=primary)
 
     def post(self, msg, run=None, tags=None, attachments=None,
              experiment=True, facility=False, title=None):
@@ -198,3 +206,22 @@ class HutchELog(ELog):
                                    'configuration file') from exc
         # Return our device
         return cls(*args, user=user, pw=pw, **kwargs)
+
+    @classmethod
+    def from_registry(cls):
+        """
+        Return the primary HutchElog object of the session.
+
+        The first HutchElog created in the session will be the primary elog,
+        unless another elog is created with the "primary=True" kwarg.
+        There may be no primary elog at all if every single elog has been
+        created with "primary=False", kwarg.
+
+        This is for utilities that want to integrate with whatever the
+        session's elog is without needing to pass around the elog as an
+        argument to every bit of code that needs it.
+
+        If no elog has been registered as the primary elog, this will raise a
+        ValueError.
+        """
+        return get_primary_elog()
