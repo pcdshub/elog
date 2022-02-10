@@ -1,17 +1,15 @@
 """
 Interface for PHP based ELog web service
 """
-import os
 import getpass
 import logging
-from urllib.parse import urlparse
 import mimetypes
+import os
+from urllib.parse import urlparse
 
 import requests
-from requests.auth import HTTPBasicAuth
-
 from krtc import KerberosTicket
-
+from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +36,14 @@ class PHPWebService:
     """
     base_url = 'https://pswww.slac.stanford.edu'
 
-    def __init__(self, user=None, pw=None, base_url=None):
+    def __init__(self, user=None, pw=None, base_url=None, dev=False):
         self._auth = None
         self._base_url = base_url if base_url else self.base_url
         self.url = None
+        if dev:
+            self._lgbk = 'devlgbk'
+        else:
+            self._lgbk = 'lgbk'
         self.authenticate(user=user, pw=pw)
 
     def authenticate(self, user=None, pw=None):
@@ -109,7 +111,7 @@ class PHPWebService:
             web.get_facilities_logbook('CXI Instrument')
         """
         # Format correct URL
-        url = (self._url + '/lgbk/lgbk/' + instrument + '/ws/info')
+        url = (self._url + f'/{self._lgbk}/lgbk/' + instrument + '/ws/info')
         # Make request to WebService
         result = requests.get(url, **self._auth)
         # Invalid HTTP code
@@ -154,9 +156,9 @@ class PHPWebService:
 
         logger.debug("Requesting current experiment for %s", instrument)
         # Format correct URL
-        url = '{url}/lgbk/lgbk/ws/activeexperiment_for_instrument_station' \
+        url = '{url}/{lgbk}/lgbk/ws/activeexperiment_for_instrument_station' \
               '?instrument_name={instrument}' \
-              ''.format(url=self._url, instrument=instrument)
+              ''.format(url=self._url, lgbk=self._lgbk, instrument=instrument)
         if station:
             url += '&station={}'.format(station)
         # Make request to WebService
@@ -228,7 +230,8 @@ class PHPWebService:
                     mimetypes.guess_type(filename)[0])))
 
         # Make request to web service
-        url = self._url + "/lgbk/lgbk/" + logbook_id + "/ws/new_elog_entry"
+        url = self._url + f"/{self._lgbk}/lgbk/" + \
+            logbook_id + "/ws/new_elog_entry"
         if files:
             result = requests.post(url, data=post, files=files, **self._auth)
         else:
