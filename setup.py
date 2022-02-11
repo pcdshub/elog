@@ -11,7 +11,6 @@ setup(name='elog',
       license='BSD',
       author='SLAC National Accelerator Laboratory',
       packages=find_packages(),
-      install_requires=requirements,
       description='Utilities for posting to LCLS Experimental ELog',
       scripts=['scripts/LogBookPost.py']
       )
