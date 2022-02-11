@@ -1,2 +1,2 @@
 requests
-krtc
+git+https://github.com/slaclab/krtc
