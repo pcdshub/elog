@@ -22,8 +22,8 @@ env:
 
 jobs:
   allow_failures:
-    - name: "Python 3.6 - PIP"
-    - name: "Docs Build (Python 3.6)"
+    - name: "Python - PIP"
+    - name: "Docs Build"
     - name: "Docs Upload"
 
 import:
