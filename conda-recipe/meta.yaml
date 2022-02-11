@@ -19,6 +19,7 @@ requirements:
     - python >=3.5
     - requests
     - krtc
+    - ophyd
 
 test:
   imports:
@@ -27,4 +28,4 @@ test:
 about:
   home: https://github.com/pcdshub/elog
   license: SLAC Open License
-  summary: Python API for interfacing with LCLS ELog 
+  summary: Python API for interfacing with LCLS ELog
