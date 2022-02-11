@@ -6,6 +6,8 @@ import os
 from collections import namedtuple
 from configparser import ConfigParser, NoOptionError
 
+from ophyd.status import StatusBase
+
 from .pswww import PHPWebService
 from .utils import facility_name, get_primary_elog, register_elog
 
@@ -238,3 +240,12 @@ class HutchELog(ELog):
         ValueError.
         """
         return get_primary_elog()
+
+    def set(self, *args, **kwargs):
+        """ Pass through method to post for Bluesky API compatibility """
+        self.post(*args, **kwargs)
+
+        # set message requrires a status object to be returned.
+        # another message could possibly be used, but this seemed simplest
+        status = StatusBase(done=True, success=True)
+        return status
