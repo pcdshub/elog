@@ -92,6 +92,15 @@ class HutchELog(ELog):
     in one of two ways; ws-auth if a username and/or password is supplied, or
     kerberos if these keywords are left blank
 
+    Usage:
+
+        .. code-block:: python
+
+            el = HutchELog('XPP')
+
+            # Only 'tsd' currently works (2/22)
+            el_dev = HutchELog('tsd', dev=True)
+
     Parameters
     ----------
     instrument : str
@@ -118,7 +127,8 @@ class HutchELog(ELog):
     """
 
     def __init__(self, instrument, station=None, user=None, pw=None,
-                 base_url=None, primary=None, dev=False):
+                 base_url=None, primary=None, dev=False,
+                 enable_run_posts=False):
         self.instrument = instrument
         self.station = station
         # Load an empty service
@@ -132,6 +142,8 @@ class HutchELog(ELog):
                                                      station=station)
         self.logbooks['experiment'] = exp_id
         register_elog(self, primary=primary)
+
+        self.enable_run_posts = enable_run_posts
 
     def post(self, msg, run=None, tags=None, attachments=None,
              experiment=True, facility=False, title=None):
