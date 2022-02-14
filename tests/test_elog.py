@@ -1,4 +1,6 @@
 import os
+import time
+
 import pytest
 
 import elog.elog
@@ -35,6 +37,12 @@ def mockelog(patch_webservice):
     yield HutchELog('TST')
 
 
+@pytest.fixture(autouse=True)
+def reset_webservice(mockelog):
+    # Clear mockelog posts before each test
+    mockelog.service.posts = list()
+
+
 @pytest.fixture(scope='function')
 def temporary_config():
     cfg = """\
@@ -68,6 +76,15 @@ def test_elog_post(mockelog):
         mockelog.post('Failure', experiment=False, facility=False)
 
 
+def test_elog_set(mockelog):
+    msg = 'set method for post'
+    st = mockelog.set(msg)
+    time.sleep(0.1)  # needed to allow status to resolve
+    assert len(mockelog.service.posts) == 1
+    assert mockelog.service.posts[-1][0][0] == msg
+    assert st.done and st.success
+
+
 def test_elog_from_conf(temporary_config):
     # Fake ELog that stores the username and pw internally
     class TestELog(HutchELog):
@@ -96,5 +113,5 @@ def test_elog_from_registry(patch_webservice):
     assert HutchELog.from_registry() is elog1
     elog3 = HutchELog('TST', primary=True)
     assert HutchELog.from_registry() is elog3
-    for elog in (elog0, elog1, elog2, elog3):
-        assert elog in registry
+    for el in (elog0, elog1, elog2, elog3):
+        assert el in registry
