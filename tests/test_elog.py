@@ -79,7 +79,7 @@ def test_elog_post(mockelog):
 def test_elog_set(mockelog):
     msg = 'set method for post'
     st = mockelog.set(msg)
-    time.sleep(0.1)  # needed to allow status to resolve
+    st.wait(timeout=0.1)
     assert len(mockelog.service.posts) == 1
     assert mockelog.service.posts[-1][0][0] == msg
     assert st.done and st.success
