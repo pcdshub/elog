@@ -145,6 +145,7 @@ class HutchELog(ELog):
         self.logbooks['experiment'] = exp_id
         register_elog(self, primary=primary)
 
+        # Switch for ELog posting callback in pcdshub/nabs
         self.enable_run_posts = enable_run_posts
 
     def post(self, msg, run=None, tags=None, attachments=None,
