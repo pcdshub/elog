@@ -1,5 +1,9 @@
+from setuptools import find_packages, setup
+
 import versioneer
-from setuptools import setup, find_packages
+
+with open('requirements.txt') as f:
+    requirements = f.read().split()
 
 setup(name='elog',
       version=versioneer.get_version(),

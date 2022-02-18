@@ -1,14 +1,15 @@
 """
 Front-facing API for PCDS Elog
 """
-import os
 import logging
-from configparser import NoOptionError, ConfigParser
-
+import os
 from collections import namedtuple
+from configparser import ConfigParser, NoOptionError
 
-from .utils import facility_name, get_primary_elog, register_elog
+from ophyd.status import StatusBase
+
 from .pswww import PHPWebService
+from .utils import facility_name, get_primary_elog, register_elog
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +36,11 @@ class ELog:
     base_url : str, optional
         Point to a different server; perhaps a test server.
     """
-    def __init__(self, logbooks, user=None, pw=None, base_url=None):
+    def __init__(self, logbooks, user=None, pw=None, base_url=None, dev=False):
         self.logbooks = logbooks
-        self.service = PHPWebService(user=user, pw=pw, base_url=base_url)
+        self.service = PHPWebService(user=user, pw=pw,
+                                     base_url=base_url, dev=dev
+                                     )
 
     def post(self, msg, run=None, tags=None,
              attachments=None, logbooks=None, title=None):
@@ -91,6 +94,15 @@ class HutchELog(ELog):
     in one of two ways; ws-auth if a username and/or password is supplied, or
     kerberos if these keywords are left blank
 
+    Usage:
+
+        .. code-block:: python
+
+            el = HutchELog('XPP')
+
+            # Only 'tsd' currently works (2/22)
+            el_dev = HutchELog('tsd', dev=True)
+
     Parameters
     ----------
     instrument : str
@@ -117,12 +129,13 @@ class HutchELog(ELog):
     """
 
     def __init__(self, instrument, station=None, user=None, pw=None,
-                 base_url=None, primary=None):
+                 base_url=None, primary=None, dev=False,
+                 enable_run_posts=False):
         self.instrument = instrument
         self.station = station
         # Load an empty service
         logger.debug("Loading logbooks for %s", instrument)
-        super().__init__({}, user=user, pw=pw, base_url=base_url)
+        super().__init__({}, user=user, pw=pw, base_url=base_url, dev=dev)
         # Load the facilities logbook
         f_id = facility_name(instrument)
         self.logbooks['facility'] = self.service.get_facilities_logbook(f_id)
@@ -131,6 +144,9 @@ class HutchELog(ELog):
                                                      station=station)
         self.logbooks['experiment'] = exp_id
         register_elog(self, primary=primary)
+
+        # Switch for ELog posting callback in pcdshub/nabs
+        self.enable_run_posts = enable_run_posts
 
     def post(self, msg, run=None, tags=None, attachments=None,
              experiment=True, facility=False, title=None):
@@ -225,3 +241,12 @@ class HutchELog(ELog):
         ValueError.
         """
         return get_primary_elog()
+
+    def set(self, *args, **kwargs):
+        """ Pass through method to post for Bluesky API compatibility """
+        self.post(*args, **kwargs)
+
+        # set message requrires a status object to be returned.
+        # another message could possibly be used, but this seemed simplest
+        status = StatusBase(done=True, success=True)
+        return status
