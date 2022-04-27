@@ -55,7 +55,7 @@ and `experiment` keywords:
                  tags=['bug_report'],
                  attachments=[('path/to/log.txt', 'Relevant log file')])
 ```
-   
+
 ## Authentication
 Most users will authenticate with `kerberos`, this is the assumption made if no
 username or password is passed into the class constructor. However, for

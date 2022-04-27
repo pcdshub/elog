@@ -1,5 +1,6 @@
-import pytest
 import getpass
+
+import pytest
 
 from elog.pswww import PHPWebService
 
