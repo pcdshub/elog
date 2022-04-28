@@ -6,9 +6,8 @@ which is what hutch python was using mostly. The argparse seeks to mimic
 the command line parameters for LogBookPost_self.py. This is implemented
 using the PCDS elog client.
 """
-import os
-import logging
 import argparse
+import logging
 import subprocess
 
 import elog

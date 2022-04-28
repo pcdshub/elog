@@ -1,9 +1,9 @@
-import pytest
-import os.path
 import logging
+import os.path
+
+import pytest
 
 from elog.pswww import PHPWebService
-
 
 logger = logging.getLogger(__name__)
 

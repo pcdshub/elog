@@ -277,10 +277,12 @@ https://creativecommons.org/publicdomain/zero/1.0/ .
 """
 
 from __future__ import print_function
+
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
 import errno
 import json
 import os
@@ -560,15 +562,15 @@ def git_get_keywords(versionfile_abs):
         f = open(versionfile_abs, "r")
         for line in f.readlines():
             if line.strip().startswith("git_refnames ="):
-                mo = re.search(r'=\s*"(.*)"', line)
+                mo = re.search('=\\s*"(.*)"', line)
                 if mo:
                     keywords["refnames"] = mo.group(1)
             if line.strip().startswith("git_full ="):
-                mo = re.search(r'=\s*"(.*)"', line)
+                mo = re.search('=\\s*"(.*)"', line)
                 if mo:
                     keywords["full"] = mo.group(1)
             if line.strip().startswith("git_date ="):
-                mo = re.search(r'=\s*"(.*)"', line)
+                mo = re.search('=\\s*"(.*)"', line)
                 if mo:
                     keywords["date"] = mo.group(1)
         f.close()
@@ -609,7 +611,7 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
         # between branches and tags. By ignoring refnames without digits, we
         # filter out many common branch names like "release" and
         # "stabilization", as well as "HEAD" and "master".
-        tags = set([r for r in refs if re.search(r'\d', r)])
+        tags = set([r for r in refs if re.search('\\d', r)])
         if verbose:
             print("discarding '%%s', no digits" %% ",".join(refs - tags))
     if verbose:
@@ -685,7 +687,7 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
 
     if "-" in git_describe:
         # TAG-NUM-gHEX
-        mo = re.search(r'^(.+)-(\d+)-g([0-9a-f]+)$', git_describe)
+        mo = re.search('^(.+)-(\\d+)-g([0-9a-f]+)$', git_describe)
         if not mo:
             # unparseable. Maybe git-describe is misbehaving?
             pieces["error"] = ("unable to parse git-describe output: '%%s'"
@@ -1560,6 +1562,7 @@ def get_cmdclass():
 
     if "cx_Freeze" in sys.modules:  # cx_freeze enabled?
         from cx_Freeze.dist import build_exe as _build_exe
+
         # nczeczulin reports that py2exe won't like the pep440-style string
         # as FILEVERSION, but it can be used for PRODUCTVERSION, e.g.
         # setup(console=[{
