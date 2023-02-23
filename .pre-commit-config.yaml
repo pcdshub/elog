@@ -1,5 +1,10 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+exclude: |
+  (?x)^(
+    elog/_version.py|
+  )$
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -23,6 +28,6 @@ repos:
     -   id: flake8
 
 -   repo: https://github.com/timothycrosley/isort
-    rev: 5.12.0
+    rev: 5.11.5
     hooks:
     -   id: isort
