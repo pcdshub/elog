@@ -219,7 +219,7 @@ class HutchELog(ELog):
             pw = cfg.get('DEFAULT', 'pw')
         except NoOptionError as exc:
             raise OSError('Must specify "user" and "pw" in '
-                                   'configuration file') from exc
+                          'configuration file') from exc
         # Return our device
         return cls(*args, user=user, pw=pw, **kwargs)
 
