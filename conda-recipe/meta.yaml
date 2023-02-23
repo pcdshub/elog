@@ -1,29 +1,39 @@
-{% set data = load_setup_py_data() %}
+{% set package_name = "elog" %}
+{% set import_name = "elog" %}
+{% set version = load_file_regex(load_file=os.path.join(import_name, "_version.py"), regex_pattern=".*version = '(\S+)'").group(1) %}
 
 package:
-  name: elog
-  version : {{ data.get('version') }}
+  name: {{ package_name }}
+  version: {{ version }}
 
 source:
   path: ..
 
 build:
-  number: 1
+  number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+
+
 
 requirements:
   build:
-    - python >=3.5
-    - setuptools
+  - python >=3.5
+  - setuptools_scm
+  - pip
   run:
-    - python >=3.5
-    - requests
-    - krtc
-    - ophyd
+  - python >=3.5
+  - requests
+  - krtc
+  - ophyd
+
+
 
 test:
   imports:
-    - elog
+  - elog
+
+
 
 about:
   home: https://github.com/pcdshub/elog
