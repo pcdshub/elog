@@ -16,7 +16,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
-if __name__ == '__main__':
+
+def main():
     parser = argparse.ArgumentParser(description='A command-line utility \
         to post messages to the electronic logbook of a specified experiment.')
     parser.add_argument('-i', '--instrument', required=True,
@@ -74,16 +75,20 @@ if __name__ == '__main__':
         params["msg"] = args.message
 
     if args.experiment:
-        elog = elog.ELog(logbooks={"experiment": args.experiment},
-                         user=args.user,
-                         pw=args.password,
-                         base_url=args.webserviceurl)
-        elog.post(**params)
+        elogger = elog.ELog(logbooks={"experiment": args.experiment},
+                            user=args.user,
+                            pw=args.password,
+                            base_url=args.webserviceurl)
+        elogger.post(**params)
     else:
-        elog = elog.HutchELog(args.instrument,
-                              station=args.station,
-                              user=args.user,
-                              pw=args.password,
-                              base_url=args.webserviceurl)
+        elogger = elog.HutchELog(args.instrument,
+                                 station=args.station,
+                                 user=args.user,
+                                 pw=args.password,
+                                 base_url=args.webserviceurl)
         params.update({"experiment": True, "facility": False})
-        elog.post(**params)
+        elogger.post(**params)
+
+
+if __name__ == '__main__':
+    main()

@@ -212,14 +212,14 @@ class HutchELog(ELog):
                          os.path.expanduser('~/.web.cfg')])
         # Alert the user if we found no configuration files
         if not cfgs:
-            raise EnvironmentError("No configuration file found")
+            raise OSError("No configuration file found")
         # Find the configuration
         try:
             user = cfg.get('DEFAULT', 'user')
             pw = cfg.get('DEFAULT', 'pw')
         except NoOptionError as exc:
-            raise EnvironmentError('Must specify "user" and "pw" in '
-                                   'configuration file') from exc
+            raise OSError('Must specify "user" and "pw" in '
+                          'configuration file') from exc
         # Return our device
         return cls(*args, user=user, pw=pw, **kwargs)
 

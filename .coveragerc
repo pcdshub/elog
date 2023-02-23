@@ -8,3 +8,4 @@ omit =
     *_version.py
     #tests
     *test*
+    elog/tests/*
