@@ -164,7 +164,7 @@ class PHPWebService:
             f'?instrument_name={instrument}'
         )
         if station:
-            url += '&station={}'.format(station)
+            url += f'&station={station}'
         # Make request to WebService
         result = requests.get(url, **self._auth)
         # Invalid HTTP code

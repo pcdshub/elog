@@ -12,8 +12,8 @@ def facility_name(hutch):
         'dia', 'mfx', 'mec', 'cxi', 'xcs', 'xpp', 'sxr', 'amo',
         'DIA', 'MFX', 'MEC', 'CXI', 'XCS', 'XPP', 'SXR', 'AMO',
     ]:
-        return '{}_Instrument'.format(hutch.upper())
-    return '{}_Instrument'.format(hutch.lower())
+        return f'{hutch.upper()}_Instrument'
+    return f'{hutch.lower()}_Instrument'
 
 
 def get_primary_elog():
